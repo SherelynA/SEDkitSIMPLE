@@ -113,7 +113,7 @@ class SEDSIMPLE(SED):
         else:
             self.message(f"No spectral type for {self.name} in database.", pre='[SIMPLE]')
 
-    def load_spectra_db(self, column='spectrum', **kwargs):
+    def load_spectra_db(self, column='access_url', **kwargs):
         # Fetch spectra from database
         table = 'Spectra'
         if table in self.inventory:
@@ -128,8 +128,8 @@ class SEDSIMPLE(SED):
         else:
             self.message(f"No spectra for {self.name} in database.", pre='[SIMPLE]')
 
-    def fetch_single_spectrum_db(self, spec_input, column='spectrum', spectra_format=None, error_scale=np.nan, **kwargs):
-        # Load a single spectrum from the database
+    def fetch_single_spectrum_db(self, spec_input, column='access_url', spectra_format=None, error_scale=np.nan, **kwargs):
+        # Load a single spectra from the database
 
         # Attempt to get a Spectrum1D object
         try:
@@ -138,7 +138,7 @@ class SEDSIMPLE(SED):
                             self.db.Spectra.c.regime == spec_input['regime'],
                             self.db.Spectra.c.reference == spec_input['reference'],
                             self.db.Spectra.c.observation_date == spec_input['observation_date'])).\
-                astropy(spectra=column, spectra_format=spectra_format, **kwargs)
+                astropy(spectra="access_url", spectra_format=spectra_format, **kwargs)
 
             # Extract relevant information
             bibcode = self._fetch_db_bibcode(spec_input['reference'])
@@ -184,7 +184,7 @@ class SEDSIMPLE(SED):
         # Utility function to fetch a reference from the database
         try:
             t = self.db.query(self.db.Publications.c.bibcode). \
-                filter(self.db.Publications.c.publication == ref). \
+                filter(self.db.Publications.c.reference == ref). \
                 table()
             bibcode = t['bibcode'][0]
         except Exception as e:
